@@ -34,9 +34,9 @@ to Cambridge Elevate to use it...doesn't look like it?
 So, the overall process for obtaining the Stage 1 web book would be:
 
   1. Change the base URL in clc.html to reflect the stage number
-  2. Change the `intros` variable in clc.html to reflect the stage number
+  2. Change the `STAGE_NO` variable in clc.html to reflect the stage number
   3. Open Google Chrome with the `--disable-web-security` flag (see above)
-  4. Change the page range in clc.html (line 33) to 1..101
+  4. Change the page range in clc.html (variables at the beginning) to 1..101
   5. Open clc.html in Chrome
   6. When clc.html has fully loaded, run `insert_styling()` in the developer
      console

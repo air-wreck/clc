@@ -9,9 +9,14 @@
     }
   </style>
   <script type="text/javascript">
+    /* set these variables */
+    const STAGE_NO = 1;
+    const P_START  = 102;
+    const P_END    = 208;
+
     /* base URL for the webbook resources
        change URL accordingly for Stage number */
-    const base_url = "https://elevate.cambridge.org/web/5eNA/unit2"
+    const base_url = "https://elevate.cambridge.org/web/5eNA/unit"+STAGE_NO
                     +"/index.html?mn=350797&magic=350797&p=";
 
     /* these are the pages for stage introductions
@@ -25,18 +30,18 @@
                       239, 259, 332];
     const intros_4 = [1, 15, 29, 47, 65, 83, 99, 123, 149, 165, 185, 205, 219,
                       235, 255, 362]
-    let intros = intros_2;
+    let intros = [intros_1, intros_2, intros_3, intros_4][STAGE_NO - 1];
 
     /* generate an iframe for each page */
     let frames = [];
     window.addEventListener("load", (event) => {
-      for (let p = 102; p <= 202; p++) {
-        let iframe = `<iframe id="${p}" src="${base_url}${p}" style="width:
+      for (let p = P_START; p <= P_END; p++) {
+        let iframe = `<iframe id="p${p}" src="${base_url}${p}" style="width:
         1022px; height: 674px;"></iframe>`;
         document.body.innerHTML += iframe;
 
         /* include this iframe in the list of loaded iframe ids */
-        frames.push(p.toString());
+        frames.push(`p${p}`);
 
         /* if the next page is not a title page, double the increment */
         if (!intros.includes(p) && !intros.includes(p+1)) p++;
@@ -44,14 +49,30 @@
     });
 
     /* with Chrome security settings disabled to allow cross-origin requests,
-       modify <head> of each guest frame to force colors to print properly
+       modify guest frames to set up proper printing
        we must allow guest frame scripts to finish execution, so this should
        be manually run once everything has loaded right */
     const insert_styling = () => {
       for (let f = 0; f < frames.length; f++) {
-        document.getElementById(frames[f])
-                .contentWindow.document.head.innerHTML
-                += "<style> * {-webkit-print-color-adjust: exact;} </style>";
+        let child = document.getElementById(frames[f]).contentWindow.document;
+
+        // add webkit coloring to force proper print
+        child.head.innerHTML
+          += "<style> * {-webkit-print-color-adjust: exact;} </style>";
+
+        // remove an element
+        let rm = (el) => el.parentNode.removeChild(el);
+
+        // remove header navigation menu and booklet icon from resulting PDF
+        [child.getElementsByClassName("global-header")[0],
+         child.getElementById("view-toggle")].map(rm);
+
+        // remove "prev" and "next" page links from the page footer
+        ["prev-page", "next-page"]
+          .map((cl) => child.getElementsByClassName(cl))
+          .map((x) => Array.from(x))
+          .reduce((acc, x) => acc.concat(x), [])
+          .map(rm);
       }
       console.log("STYLING DONE: print when it looks right");
     }

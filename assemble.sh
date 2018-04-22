@@ -9,7 +9,7 @@ echo "assembling CLC Stage ${BOOK_NO} pdfs"
 
 echo "finding and cropping all matching pdfs..."
 for f in ./clc${BOOK_NO}_p*[0-9].pdf; do
-  pdfcrop --margins "-4 -2 -4 -4" $f > /dev/null
+  pdfcrop --margins "-4 -3 -4 -4" $f > /dev/null
 done
 
 echo "merging cropped pdf files"
