@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pirating the Cambridge Latin Course Textbooks...</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+  <script type="text/javascript">
+    /* base URL for the webbook resources
+       change URL accordingly for Stage number */
+    const base_url = "https://elevate.cambridge.org/web/5eNA/unit2"
+                    +"/index.html?mn=350797&magic=350797&p=";
+
+    /* these are the spages for stage introductions
+       they are significant because they are the only one-page spreads
+       this affects the page numbering system
+       select the appropriate one for your stage */
+    const intros_1 = [1, 15, 27, 39, 53, 69, 83, 99, 115, 131, 147, 163, 179,
+                      208]
+    const intros_2 = [1, 23, 43, 59, 75, 93, 113, 133, 151, 202]
+    const intros_3 = [1, 21, 37, 55, 71, 89, 105, 121, 143, 167, 183, 203, 221,
+                      239, 259, 332];
+    const intros_4 = [1, 15, 29, 47, 65, 83, 99, 123, 149, 165, 185, 205, 219,
+                      235, 255, 362]
+    let intros = intros_2;
+
+    /* generate an iframe for each page */
+    let frames = [];
+    window.addEventListener("load", (event) => {
+      for (let p = 102; p <= 202; p++) {
+        let iframe = `<iframe id="${p}" src="${base_url}${p}" style="width:
+        1022px; height: 674px;"></iframe>`;
+        document.body.innerHTML += iframe;
+
+        /* include this iframe in the list of loaded iframe ids */
+        frames.push(p.toString());
+
+        /* if the next page is not a title page, double the increment */
+        if (!intros.includes(p) && !intros.includes(p+1)) p++;
+      }
+    });
+
+    /* with Chrome security settings disabled to allow cross-origin requests,
+       modify <head> of each guest frame to force colors to print properly
+       we must allow guest frame scripts to finish execution, so this should
+       be manually run once everything has loaded right */
+    const insert_styling = () => {
+      for (let f = 0; f < frames.length; f++) {
+        document.getElementById(frames[f])
+                .contentWindow.document.head.innerHTML
+                += "<style> * {-webkit-print-color-adjust: exact;} </style>";
+      }
+      console.log("STYLING DONE: print when it looks right");
+    }
+  </script>
+</head>
+<body>
+</body>
+</html>
